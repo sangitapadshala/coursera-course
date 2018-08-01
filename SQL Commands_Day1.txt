@@ -1,0 +1,82 @@
+select * from emp 
+where mgr = (select mgr from emp where empno=7521)
+and sal<(select sal from emp where empno= 7566 )
+
+
+select * from emp where sal = (select min(sal) from emp)
+
+select empno,min(sal) from emp group by empno having min(sal)>(select min(sal) from emp where deptno = 10)
+
+select * from emp where sal = (select min(sal) from emp group by deptno)
+
+select * from emp where sal IN (select min(sal) from emp group by deptno)
+
+select empno,ename,job,sal from emp where sal < ALL(select sal from emp where job = 'CLERK')
+AND job <> 'CLERK'
+
+create table temp(id number)
+
+insert into temp values(1,'NEHA')
+insert into temp values(2,'KOMAL')
+insert into temp values(3,'KOMAL')
+select * from temp; 
+delete from temp;
+rollback;
+select * from dual
+desc dual
+
+delete from dual where dummy='X'
+insert into dual values ('kl')
+
+rollback
+
+
+update emp set ename = 'SUNNY' where empno= 7782;
+commit;
+
+alter table temp add name varchar(50);
+update temp set id = 3 where id =  (select top 1 id from temp) AND name = 'KOMAL'
+
+delete from temp where id > (select min(id) from temp where name='KOMAL')
+
+select * from temp
+
+create table customer(
+id number primary key,
+name varchar2(20) not null,
+dob date ,
+email varchar(20),
+sal number check(sal>0),
+constraint c_con_1 unique (email)
+)
+
+desc customer
+
+
+select * from user_constraints where table_name='CUSTOMER'
+
+create view temp2 as select id id,name name from temp 
+
+select * from temp2
+
+create view emp_name as select empno emp_id,ename name from emp where deptno =10
+
+select * from emp_name
+
+create sequence dept_id increment by 10 start with 120 maxvalue 150 nocache cycle
+
+select dept_id.nextval from dual
+drop sequence dept_id
+
+select * from customer                              
+insert into customer values(1,'abc',to_date('02-may-1996'),'abc@gmail.com',2000)     
+insert into customer values(2,'abc2',to_date('22-may-1996'),'abc2@gmail.com',12000)   
+commit  
+insert into customer values(3,'abc3',to_date('12-jun-1996'),'abc3@gmail.com',23000)     
+delete from customer where id=3
+rollback
+
+insert into customer values(4,'abc4',to_date('02-nov-1996'),'abc4@gmail.com',90000)     
+insert into customer values(5,'abc5',to_date('02-oct-1996'),'abc5@gmail.com',13000)     
+
+

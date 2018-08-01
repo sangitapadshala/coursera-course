@@ -1,0 +1,118 @@
+declare
+cursor emp_cursor is 
+select empno ,ename from emp where deptno = 10;
+emp_id emp.empno%type;
+name emp.ename%type;
+begin
+open emp_cursor;
+loop 
+fetch emp_cursor into emp_id,name;
+exit when emp_cursor%notfound;
+dbms_output.put_line(emp_id||' '||name);
+end loop;
+close emp_cursor;
+end;
+
+declare
+cursor emp_cursor1 is 
+select empno,ename from emp where deptno = 30;
+begin
+for emp_record IN emp_cursor1
+loop
+dbms_output.put_line(emp_record.empno||' '||emp_record.ename);
+end loop;
+end; 
+
+declare
+ lname varchar2(50);
+begin
+select ename into lname from emp where deptno = 10;
+dbms_output.put_line(lname||'has deptno 10');
+exception
+when TOO_MANY_ROWS then
+dbms_output.put_line('multiple rows...');
+dbms_output.put_line(SQLCODE);
+dbms_output.put_line(SQLERRM);
+end;
+
+
+declare
+invalid_dept exception;
+name varchar(20):='john';
+num number:=80;
+begin
+update dept set dname= name where deptno =  num;
+if sql%notfound then raise invalid_dept;
+end if;
+commit;
+exception 
+when invalid_dept then 
+dbms_output.put_line('NO such dept id');
+dbms_output.put_line(SQLCODE);
+dbms_output.put_line(SQLERRM);
+end;
+
+create or replace procedure raise_sal(id IN emp.empno%type, percent IN NUMBER)
+is
+begin
+update emp set sal= sal*(1+percent/100) where empno= id;
+end raise_sal; 
+
+begin
+raise_sal(7839,10);
+end
+
+update dept set dname = 'ACCOUNTING' where deptno=10;
+
+
+CREATE OR REPLACE procedure query_emp
+(id in emp.empno%type,
+name out emp.ename%type,
+salary out emp.sal%type)
+is
+begin
+select ename,sal into name,salary
+from emp where empno= id;
+end query_emp;
+
+declare
+emp_name emp.ename%type;
+emp_sal emp.sal%type;
+begin
+query_emp(7839,emp_name,emp_sal);
+end
+declare
+
+emp_sal emp.sal%type;
+begin
+query_emp(7839,emp_name=>'san',emp_sal);
+end
+
+select text from user_source where name = 'RAISE_SAL' AND type = 'PROCEDURE' order by line;
+
+create or replace function get_sal(
+id emp.empno%type) 
+return number IS
+sal emp.sal%type := 0;
+begin
+select sal into sal from emp where empno = id;
+return sal;
+end get_sal;
+
+
+begin
+dbms_output.put_line(get_sal(7839));
+end;
+
+select get_sal(12) AS SALARY from dual;
+
+desc dual;
+select * from dual
+
+create or replace function tax(value in number)
+return number is 
+begin
+return(value * 0.08);
+end tax;
+
+select empno,ename,sal,tax(sal) from emp where deptno = 30;
